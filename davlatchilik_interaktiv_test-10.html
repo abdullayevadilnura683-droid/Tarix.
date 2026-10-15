@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Davlatchilik tarixi — Interaktiv test</title>
+<style>
+:root{--ink:#182044;--muted:#68708e;--glass:rgba(255,255,255,.92);--purple:#6c35db;--pink:#ff4fa3;--cyan:#24d6d8;--green:#16a765;--red:#e74761}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(125deg,#6a35dc 0%,#ed4b9b 43%,#ff9e55 72%,#37d9d0 100%);background-size:250% 250%;animation:bgshift 14s ease infinite;overflow-x:hidden}
+@keyframes bgshift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.blob{position:fixed;border-radius:50%;filter:blur(1px);opacity:.26;pointer-events:none;z-index:0}
+.blob.one{width:260px;height:260px;background:#fff;top:-90px;right:-60px}.blob.two{width:210px;height:210px;background:#ffe94a;bottom:3%;left:-90px}.blob.three{width:130px;height:130px;background:#6bfff0;top:48%;right:4%}
+.wrap{position:relative;z-index:1;max-width:850px;margin:0 auto;padding:28px 16px 44px}
+.hero{text-align:center;color:#fff;padding:14px 8px 24px;text-shadow:0 2px 18px #47218b55}
+.eyebrow{display:inline-block;padding:7px 13px;border:1px solid #ffffff75;background:#ffffff25;border-radius:99px;font-size:.8rem;font-weight:800;letter-spacing:.08em}
+h1{font-size:clamp(2rem,6vw,3.3rem);line-height:1.06;margin:16px 0 10px;letter-spacing:-.04em}
+.hero p{margin:0;font-size:1rem;opacity:.95}
+.panel{background:var(--glass);border:1px solid #ffffffb8;border-radius:26px;padding:clamp(18px,4vw,32px);box-shadow:0 22px 70px #3c176d35;backdrop-filter:blur(14px)}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:13px}
+.pill{background:#f0eaff;color:#6034bf;padding:8px 12px;border-radius:99px;font-size:.84rem;font-weight:800}
+.score-pill{background:#e0fbf3;color:#087e59}
+.track{height:10px;border-radius:99px;background:#e8e8f4;overflow:hidden;margin:12px 0 25px}
+.track div{height:100%;width:0;background:linear-gradient(90deg,#6b36df,#f04f9c,#ffad4d);border-radius:99px;transition:width .35s}
+.qnum{font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;font-weight:900;color:#8b61d7;margin-bottom:9px}
+h2{font-size:clamp(1.2rem,3.8vw,1.7rem);line-height:1.35;margin:0 0 21px}
+.answers{display:grid;gap:11px}
+.answer{display:flex;align-items:center;gap:12px;text-align:left;width:100%;border:2px solid #e6e5f2;background:#fff;border-radius:16px;padding:14px 15px;font:inherit;font-size:1rem;color:var(--ink);cursor:pointer;transition:transform .15s,border-color .15s,background .15s;min-height:58px}
+.answer:hover:not(:disabled){transform:translateY(-2px);border-color:#a88be9;background:#faf7ff}
+.letter{display:grid;place-items:center;flex:0 0 34px;height:34px;border-radius:11px;background:#f0ebff;color:#6738c9;font-weight:900}
+.answer.correct{border-color:#20b879;background:#e9fff5}.answer.correct .letter{background:#20b879;color:white}
+.answer.wrong{border-color:#ef6476;background:#fff0f2}.answer.wrong .letter{background:#ef6476;color:white}
+.answer:disabled{cursor:default}
+.feedback{display:none;margin-top:17px;border-radius:15px;padding:14px 16px;line-height:1.5}
+.feedback.show{display:block}.feedback.good{background:#e6fff3;color:#126c4c}.feedback.bad{background:#fff0f2;color:#9a2c42}
+.explain{font-size:.93rem;margin-top:5px;opacity:.9}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:20px}
+button.primary,button.secondary{border:0;border-radius:14px;padding:13px 18px;font:inherit;font-weight:850;cursor:pointer;transition:transform .15s,filter .15s}
+button.primary{color:#fff;background:linear-gradient(100deg,#6b36df,#e8479d);box-shadow:0 8px 18px #6b36df35}
+button.secondary{background:#f0edfa;color:#5738a6}
+button.primary:hover,button.secondary:hover{transform:translateY(-1px);filter:brightness(1.03)}
+button:focus-visible{outline:3px solid #1a9eac;outline-offset:3px}
+#nextBtn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.startbox{text-align:center;padding:18px 0 8px}.startbox .emoji{font-size:3rem}
+.startbox p{color:var(--muted);line-height:1.6;max-width:540px;margin:10px auto 22px}
+.startbox .primary{font-size:1.05rem;padding:15px 25px}
+.result{display:none;text-align:center;padding:12px 0}.result.show{display:block}
+.result .big{font-size:4rem}.result h2{font-size:2rem;margin:8px 0}.result p{color:var(--muted);line-height:1.6}
+.resultstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
+.stat{padding:15px 8px;border-radius:16px;background:#f5f1ff}.stat strong{display:block;font-size:1.55rem;color:#6335c4}.stat span{font-size:.82rem;color:var(--muted)}
+.review{display:none;margin-top:22px;text-align:left}.review.show{display:block}.review h3{margin-bottom:12px}.review-item{padding:13px 14px;border:1px solid #e8e5f4;border-radius:13px;margin:9px 0;background:#fff}.review-item strong{display:block;margin-bottom:5px}.review-item span{font-size:.9rem;color:#66708c}
+.footer{text-align:center;color:#fff;font-size:.82rem;margin-top:18px;opacity:.9}
+@media(max-width:520px){.wrap{padding:16px 11px 30px}.panel{border-radius:21px}.answer{padding:12px;font-size:.95rem}.actions>*{flex:1}.resultstats{gap:6px}.stat{padding:12px 4px}}
+</style>
+</head>
+<body>
+<div class="blob one"></div><div class="blob two"></div><div class="blob three"></div>
+<main class="wrap">
+<header class="hero">
+<div class="eyebrow">🎓 BILIMINGNI SINAB KO‘R</div>
+<h1>Davlatchilik tarixi</h1>
+<p>20 ta savol · 4 ta variant · Har bir to‘g‘ri javob — bir qadam oldinga!</p>
+</header>
+<section class="panel">
+<div id="startScreen" class="startbox">
+<div class="emoji">🏛️✨</div>
+<h2>Testga tayyormisan?</h2>
+<p>PDF fayldagi 20 ta savol asosida tayyorlandi. Javobni belgilashing bilan natija ko‘rinadi. Oxirida balling va xato qilgan savollaringni ko‘rishing mumkin.</p>
+<button class="primary" id="startBtn">🚀 Testni boshlash</button>
+</div>
+<div id="quizScreen" style="display:none">
+<div class="topline"><span class="pill" id="countPill">Savol 1 / 20</span><span class="pill score-pill" id="scorePill">⭐ Ball: 0</span></div>
+<div class="track"><div id="progress"></div></div>
+<div class="qnum" id="qnum">1-SAVOL</div>
+<h2 id="question"></h2>
+<div class="answers" id="answers"></div>
+<div id="feedback" class="feedback" aria-live="polite"></div>
+<div class="actions"><button class="secondary" id="quitBtn">↩ Boshiga qaytish</button><button class="primary" id="nextBtn" disabled>Keyingi savol →</button></div>
+</div>
+<div id="resultScreen" class="result">
+<div class="big" id="resultEmoji">🏆</div><h2 id="resultTitle">Ajoyib!</h2><p id="resultText"></p>
+<div class="resultstats"><div class="stat"><strong id="finalScore">0/20</strong><span>To‘g‘ri javob</span></div><div class="stat"><strong id="percent">0%</strong><span>Natija</span></div><div class="stat"><strong id="wrongCount">0</strong><span>Xato javob</span></div></div>
+<button class="primary" id="retryBtn">🔁 Qaytadan ishlash</button>
+<button class="secondary" id="reviewBtn">📚 Xatolarni ko‘rish</button>
+<div class="review" id="review"><h3>📌 Takrorlash uchun</h3><div id="reviewList"></div></div>
+</div>
+</section>
+<div class="footer">🌈 Omad! Har bir urinish — yangi bilim.</div>
+</main>
+<script>
+const questions = [
+{q:"Quyidagilardan qaysi biri davlatning asosiy belgisi emas?",a:["Urug‘chilik aloqalari","Milliy suverenitet","Hududiy birlik","Soliq tizimi"],c:0,e:"Davlat paydo bo‘lishi bilan urug‘-qabilachilik aloqalaridan etnik va sinfiy umumiylikka o‘tildi."},
+{q:"«Sharq yo‘li»da iqtisodiyotning asosi nima edi?",a:["Dengiz savdosi","Xususiy mulkchilik","Ko‘chmanchi chorvachilik","Irrigatsiya dehqonchiligi"],c:3,e:"Yer va irrigatsiya inshootlari davlat mulki bo‘lgan, dehqonchilik jamoasi esa jamiyatning birlamchi yacheykasi edi."},
+{q:"Jarqo‘tonda qanday tuzilma qaror topgan?",a:["Kushon imperiyasi","Embrional shakldagi davlatga o‘xshash tuzilma","Turkiy hoqonlik","Xorazmshohlar davlati"],c:1,e:"Bu miloddan avvalgi II ming yillikning ikkinchi yarmida, O‘zbekiston janubida yuz bergan."},
+{q:"Markaziy Osiyo Ahmoniylar davlati tarkibida qaysi yillarda bo‘lgan?",a:["Mil. avv. 100 – mil. 100","Mil. avv. 250–100","Mil. avv. 539–330","Mil. avv. 330–250"],c:2,e:"PDFdagi izohga ko‘ra, bu davr mahalliy davlatchilik rivojidagi tanaffus bo‘lgan."},
+{q:"Massagetlar malikasi To‘maris Kir II ni qaysi yilda mag‘lub etgan?",a:["Mil. avv. 330-yil","Mil. avv. 530-yil","Mil. avv. 519-yil","Mil. avv. 250-yil"],c:1,e:"Jangda Kir II o‘ldirilgan. Bu urush haqida Gerodot yozib qoldirgan."},
+{q:"Doro I qo‘shinini cho‘lga boshlab borib halokatga uchratgan sak qahramoni kim?",a:["Temur Malik","Sparganis","Spitamen","Shiroq"],c:3,e:"PDF izohida Shiroq forslarni yo‘ldan adashtirgani qayd etilgan."},
+{q:"Kushon podshosi Kanishka davrida poytaxt qayerga ko‘chirilgan?",a:["Dalvarzin","Qang‘a","Samarqand","Peshovar"],c:3,e:"PDFdagi javob: Peshovar. Izohda Kanishka davridan boshlab buddaviylik davlat dini bo‘lgani aytilgan."},
+{q:"Turkiy hoqonlikka kim va qaysi yilda asos solgan?",a:["Mazdak, 529-yil","Bumin, 551-yil","Diodot, mil. avv. 250-yil","Kidara, 456-yil"],c:1,e:"Bumin jujanlar xonini mag‘lub etib, Turkiy hoqonlikka (551–744) asos solgan."},
+{q:"Amir Temur markazlashgan davlatni qaysi yillarda boshqargan?",a:["1405–1447","1409–1449","1370–1405","1469–1506"],c:2,e:"PDFga ko‘ra, Amir Temur 1370–1405-yillarda hukmronlik qilgan."},
+{q:"XVIII asrga kelib o‘zbek davlatchiligi qaysi uch markazga bo‘linib ketgan?",a:["Samarqand, Termiz, Xorazm","Buxoro, Hirot, Balx","Toshkent, Farg‘ona, Qarshi","Buxoro, Xiva, Qo‘qon"],c:3,e:"Bu bo‘linish va tarqoqlik Rossiya imperiyasi istilosiga qulay sharoit yaratgan."},
+{q:"Rossiya istilosining birinchi bosqichida (1847–1865) qaysi shahar bosib olindi?",a:["Buxoro","Toshkent","Samarqand","Xiva"],c:1,e:"PDFdagi javob — Toshkent. Izohda istilo qilingan hududlarda Turkiston viloyati tashkil etilgani keltirilgan."},
+{q:"Jaloliddin Manguberdi mo‘g‘ul istilochilariga qarshi qaysi yillarda kurashgan?",a:["1501–1601","1370–1405","1847–1865","1219–1231"],c:3,e:"PDFda Jaloliddin Manguberdining kurash yillari 1219–1231 deb berilgan."},
+{q:"Mazdak qaysi yilda qatl etilgan?",a:["353-yil","456-yil","529-yil","551-yil"],c:2,e:"PDFdagi izohda Mazdak ta’limoti «zan, zar, zamin» tengligi g‘oyasiga asoslangani aytilgan."},
+{q:"Qang‘ hukmdorlari yozni qaysi shaharda o‘tkazishgan?",a:["Qang‘da","Peshovarda","O‘trorda","Dalvarzinda"],c:2,e:"PDF izohiga ko‘ra, yozni O‘trorda, qishni esa Qang‘ shahrida o‘tkazishgan."},
+{q:"Dovon (Farg‘ona) davlatining poytaxti qaysi shahar bo‘lgan?",a:["Dalvarzin","O‘tror","Peshovar","Ershi (Marhamat)"],c:3,e:"Dovon o‘zining «samoviy otlari» bilan mashhur bo‘lgan."},
+{q:"Yunon-Baqtriya davlati Salavkiylardan ajralib chiqqanda qo‘zg‘olonga kim boshchilik qilgan?",a:["Diodot","Kanishka","Bumin","Kujula Kadfiz"],c:0,e:"PDF izohida qo‘zg‘olonni Baqtriya aholisi ham qo‘llab-quvvatlagani aytilgan."},
+{q:"IX asrda arab xalifaligiga qarshi kurashlar natijasida qaysi davlatlar tashkil topdi?",a:["Tohiriylar va Somoniylar","Temuriylar va Boburiylar","Kushonlar va Eftalitlar","Shayboniylar va Ashtarxoniylar"],c:0,e:"Mahalliy sulola vakillarining mustaqillikka intilishi kuchaygan."},
+{q:"Boburiylar sulolasi Hindistonda qaysi jangdan so‘ng hukmronlikni boshlagan?",a:["1370-yilgi Samarqand jangi","1525-yilgi Panipat jangi","1219-yilgi Xorazm jangi","1501-yilgi Buxoro jangi"],c:1,e:"PDFda Bobur shimoliy Hindistonni egallagani va Boburiylar deyarli uch asr hukmronlik qilgani qayd etilgan."},
+{q:"Shayboniylar hukmronligi qaysi yildan boshlangan?",a:["1920-yil","1501-yil","1747-yil","1370-yil"],c:1,e:"PDF izohiga ko‘ra, Shayboniylar 1601-yilgacha, Ashtarxoniylar esa 1747-yilgacha hukmronlik qilgan."},
+{q:"«Jaloliddin Manguberdi» ordeni qaysi yili ta’sis etilgan?",a:["1999-yil 22-oktyabr","1998-yil 24-sentyabr","1996-yil","2000-yil 30-avgust"],c:3,e:"PDFdagi javob — 2000-yil 30-avgust. 1998-yilda uning 800 yilligini nishonlash haqida qaror qabul qilingan."}
+];
+let order=[], index=0, score=0, picked=[], answered=false;
+const $=id=>document.getElementById(id);
+function reset(){order=questions.map((_,i)=>i);index=0;score=0;picked=Array(questions.length).fill(null);answered=false;shuffle(order);$("startScreen").style.display="none";$("resultScreen").classList.remove("show");$("quizScreen").style.display="block";$("review").classList.remove("show");render()}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function render(){answered=false;const q=questions[order[index]];$("countPill").textContent=`Savol ${index+1} / ${questions.length}`;$("scorePill").textContent=`⭐ Ball: ${score}`;$("progress").style.width=`${index/questions.length*100}%`;$("qnum").textContent=`${index+1}-SAVOL`;$("question").textContent=q.q;$("answers").innerHTML="";$("feedback").className="feedback";$("feedback").innerHTML="";$("nextBtn").disabled=true;$("nextBtn").textContent=index===questions.length-1?"Natijani ko‘rish 🏆":"Keyingi savol →";q.a.forEach((ans,i)=>{const b=document.createElement("button");b.className="answer";b.innerHTML=`<span class="letter">${"ABCD"[i]}</span><span>${ans}</span>`;b.onclick=()=>choose(i);$("answers").appendChild(b)})}
+function choose(choice){if(answered)return;answered=true;const q=questions[order[index]],buttons=[...$("answers").children];picked[order[index]]=choice;buttons.forEach((b,i)=>{b.disabled=true;if(i===q.c)b.classList.add("correct");if(i===choice&&choice!==q.c)b.classList.add("wrong")});const f=$("feedback");f.className="feedback show "+(choice===q.c?"good":"bad");if(choice===q.c){score++;f.innerHTML=`<strong>🎉 To‘g‘ri javob!</strong><div class="explain">${q.e}</div>`}else{f.innerHTML=`<strong>💡 Bu safar xato.</strong> To‘g‘ri javob: <b>${"ABCD"[q.c]}) ${q.a[q.c]}</b><div class="explain">${q.e}</div>`}$("scorePill").textContent=`⭐ Ball: ${score}`;$("nextBtn").disabled=false;$("progress").style.width=`${(index+1)/questions.length*100}%`}
+function next(){if(!answered)return;if(index<questions.length-1){index++;render()}else showResult()}
+function showResult(){$("quizScreen").style.display="none";$("resultScreen").classList.add("show");let pct=Math.round(score/questions.length*100);$("finalScore").textContent=`${score}/${questions.length}`;$("percent").textContent=pct+"%";$("wrongCount").textContent=questions.length-score;$("resultEmoji").textContent=pct>=90?"🏆":pct>=70?"🌟":pct>=50?"💪":"📚";$("resultTitle").textContent=pct>=90?"Zo‘r natija!":pct>=70?"Juda yaxshi!":pct>=50?"Yaxshi urinish!":"Yana bir bor urinib ko‘r!";$("resultText").textContent=pct>=90?"Mavzuni juda yaxshi o‘zlashtirgansan!":pct>=70?"Yaxshi ishlading. Xato savollarni takrorlab, natijangni yanada oshir.":pct>=50?"Asosiy ma’lumotlarning bir qismini bilasan. Xatolarni ko‘rib chiqib, qayta sinab ko‘r.":"Xafa bo‘lma — qayta ishlash orqali ancha yaxshilashing mumkin.";let wrong=questions.map((q,i)=>({...q,orig:i})).filter(q=>picked[q.orig]!==q.c);$("reviewList").innerHTML=wrong.length?wrong.map(q=>`<div class="review-item"><strong>${q.orig+1}. ${q.q}</strong><span>Sening javobing: ${picked[q.orig]===null?"Belgilanmagan": "ABCD"[picked[q.orig]]+") "+q.a[picked[q.orig]]}<br>To‘g‘ri javob: ${"ABCD"[q.c]}) ${q.a[q.c]}<br>${q.e}</span></div>`).join(""):"<p>🎉 Barcha savollarga to‘g‘ri javob berding!</p>";$("reviewBtn").textContent=wrong.length?"📚 Xatolarni ko‘rish":"✅ Barchasi to‘g‘ri"}
+$("startBtn").onclick=reset;$("nextBtn").onclick=next;$("retryBtn").onclick=reset;$("quitBtn").onclick=()=>{$("quizScreen").style.display="none";$("resultScreen").classList.remove("show");$("startScreen").style.display="block"};$("reviewBtn").onclick=()=>{$("review").classList.toggle("show");$("reviewBtn").textContent=$("review").classList.contains("show")?"🙈 Xatolarni yashirish":"📚 Xatolarni ko‘rish"};
+</script>
+</body></html>
